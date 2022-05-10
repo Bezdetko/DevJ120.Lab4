@@ -79,7 +79,39 @@ public void actionPerformed(ActionEvent ae) {
 // обработаны, при этом пользователю должны сообщаться причины
 // исключения с помощью стандартных диалоговых окон класса
 // JOptionPane
-            if (file == null){
+
+    open();    
+    break;
+
+case "save":
+// Обработка команды на сохранение результатов редактирования
+// в открытом файле.
+    save();
+break;
+
+case "saveAs":
+    saveAs();
+    break;
+case "cancel":
+// Обработка команды на закрытие открытого файла без сохранения
+// сделанных изменений.
+    cancel();
+    
+break;
+case "exit":
+    exit();
+// Обработка команды на закрытие приложения. При обработке этой
+// команды следует учесть, что в момент её подачи в приложении
+// может быть открыт какой-то файл. В этом случае пользователю
+// с помощью стандартного диалогового окна класса JOptionPane
+// должен предлагаться выбор между закрытием этого файла с
+// сохранением или без сохранения сделанных в этом файле
+// изменений.
+}
+}
+
+private void open(){
+            if (file == null && editor.getText().isEmpty()){
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Opening a file");
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -97,76 +129,81 @@ public void actionPerformed(ActionEvent ae) {
                 JOptionPane.showMessageDialog(editor, "File doesnt read", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                  }
+            editor.setFileName(file.getName());
             }
             else {
-                int input = JOptionPane.showConfirmDialog (null, "File already open. Save chanches?");
+                int input = JOptionPane.showConfirmDialog (null, "Save chanches to file?");
                 // 0=yes, 1=no, 2=cancel
 //                System. out .println(input);
+                if (input == 0){
+                    save();
+                    cancel();
+                    open();
+                    }
                 if (input == 1){
-                    
-//                    ae.getActionCommand(case:"save");
+                    cancel();
+                    open();
                 }
-            }
+                }
+}
 
-break;
-case "save":
-// Обработка команды на сохранение результатов редактирования
-// в открытом файле.
-if (file !=null)
-        try (FileWriter writer = new FileWriter(file, false)) {
+private void save(){
+    if (file == null || !editor.getText().isEmpty()) {
+        saveAs();
+    }
+    else {
+        try (FileWriter fw = new FileWriter(file)) {
             String resultText = editor.getText();
-            writer.write(resultText);    
+            fw.write(resultText);    
         } catch (IOException e) {
             JOptionPane.showMessageDialog(editor, "File can't be written", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        }
+ }
 
+private void saveAs(){
+    JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Saving file");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int res = fileChooser.showSaveDialog(editor);
+        if (res == JFileChooser.APPROVE_OPTION) {
+            file = fileChooser.getSelectedFile();
+        }
+        try (FileWriter fw = new FileWriter(file)) {
+            String resultText = editor.getText();
+            fw.write(resultText);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(editor, "File can't be written", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        editor.setFileName(file.getName());
+        }
     
-break;
-case "cancel":
-// Обработка команды на закрытие открытого файла без сохранения
-// сделанных изменений.
+
+private void cancel(){
     file = null;
-    editor.appendText("", true);    
-    
-break;
-case "exit":
-// Обработка команды на закрытие приложения. При обработке этой
-// команды следует учесть, что в момент её подачи в приложении
-// может быть открыт какой-то файл. В этом случае пользователю
-// с помощью стандартного диалогового окна класса JOptionPane
-// должен предлагаться выбор между закрытием этого файла с
-// сохранением или без сохранения сделанных в этом файле
-// изменений.
-}
+    editor.appendText("", true);
 }
 
-//private String open (){
-//            String text = "";
-//            JFileChooser fileChooser = new JFileChooser();
-//            fileChooser.setDialogTitle("Opening a file");
-//            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//            int res = fileChooser.showDialog(editor, "Select");
-//            
-//            if (res == JFileChooser.APPROVE_OPTION) {
-//            File file = fileChooser.getSelectedFile();
-//            
-//            try (FileReader reader = new FileReader(file)){
-//            char[] buffer = new char[1024];
-//                   reader.read(buffer);
-//                   while ( reader.read(buffer) != -1){
-//                   text += new String(buffer);
-//                   buffer = new char[1024];
-//
-//           }
-//                   
-//            
-//            } catch (IOException ex) {
-//                JOptionPane errorPane = new JOptionPane();
-//                errorPane.showMessageDialog(null, "Something Went Wrong..", "Error as Title", JOptionPane.ERROR_MESSAGE);
-//            }
-//            }
-//            return text;
-//}
+private void exit(){
+    if (file != null || !editor.getText().isEmpty()){
+        int input = JOptionPane.showConfirmDialog (null, "Save chanches to file?");
+        // 0=yes, 1=no, 2=cancel
+        if (input == 0) {
+            save();
+            editor.dispose();
+        }
+        if (input == 1){
+        editor.dispose();
+        }
+    }
+    else {
+        editor.dispose();
+        }
+    
+}
+
+
+
 
 /**
 * Метод, автоматически вызываемый при удалении объекта из памяти (обычно
@@ -176,6 +213,9 @@ case "exit":
 */
 @Override
 public void close() {
+if (file.exists() || file!=null){
+file.deleteOnExit();
+}
 throw new UnsupportedOperationException("Not supported yet.");
 }
 }

@@ -31,12 +31,13 @@ import javax.swing.JTextArea;
 */
 public class SimpleEditor extends JFrame {
 private Container cp;
+
 /**
 * Надпись, отображающая имя текущего/редактируемого файла, а также метку,
 * отражающую его текущее состояние. Например, если текст изменён, но не
 * сохранён, то в данном поле ставиться специальный маркер (по выбору
 * программиста) или меняется шрифт отображения имени файла.
-*/
+*/  
 private JLabel fileName;
 
 /**
@@ -112,23 +113,33 @@ private void init() {
     commandButton = new JButton[]{
         new JButton("Open"),
         new JButton("Save"),
+        new JButton("Save as"),
         new JButton("Cancel"),
         new JButton("Exit")
     };
     for (JButton c : commandButton){
             buttonsPanel.add(c);
             }
+    commandButton[0].addActionListener(listener);
+    commandButton[0].setActionCommand("open");
+    commandButton[1].addActionListener(listener);
+    commandButton[1].setActionCommand("save");
+    commandButton[2].addActionListener(listener);
+    commandButton[2].setActionCommand("saveAs");
+    commandButton[3].addActionListener(listener);
+    commandButton[3].setActionCommand("cancel");
+    commandButton[4].addActionListener(listener);
+    commandButton[4].setActionCommand("exit");    
     
     fileName = new JLabel();
-    fileName.setText("INFO: creation new file. New File Name:");
+    fileName.setText("New file");
     cp.add(fileName, BorderLayout.SOUTH);
 
 
     text = new JTextArea();
     cp.add(new JScrollPane(text), BorderLayout.CENTER);
-    
     createMenu();
-}
+    }
 
 /**
 * Метод полностью создаёт главное меню приложения и добавляет его в главное
@@ -147,18 +158,28 @@ private void createMenu() {
     commandMenu = new JMenuItem[]{
         new JMenuItem("Open"),
         new JMenuItem("Save"),
+        new JMenuItem("Save as"),        
         new JMenuItem("Cancel"),
         new JMenuItem("Exit")
     };
 
     commandMenu[0].addActionListener(listener);
     commandMenu[0].setActionCommand("open");
+    commandMenu[1].addActionListener(listener);
+    commandMenu[1].setActionCommand("save");
+    commandMenu[2].addActionListener(listener);
+    commandMenu[2].setActionCommand("saveAs");
+    commandMenu[3].addActionListener(listener);
+    commandMenu[3].setActionCommand("cancel");
+    commandMenu[4].addActionListener(listener);
+    commandMenu[4].setActionCommand("exit");    
     
     
     menu[0].add(commandMenu[0]);
-    menu[0].add(commandMenu[3]);
+    menu[0].add(commandMenu[4]);
     menu[1].add(commandMenu[1]);
     menu[1].add(commandMenu[2]);
+    menu[1].add(commandMenu[3]);
 
     setJMenuBar(bar);
 }
@@ -171,10 +192,10 @@ private void createMenu() {
 * который содержится в поле. Значение false означает, что текст в поле
 * полностью заменяется на значение str.
 */
+// Реализация метода
 void appendText(String str, boolean append) {
         if (append) text.setText("");
         text.append(str);
-// Реализация метода
 }
 
 /**
@@ -187,5 +208,10 @@ String getText() {
 
 return text.getText();
 }
+
+    public void setFileName(String name) {
+       fileName.setText(name);
+    }
+
 
 }
