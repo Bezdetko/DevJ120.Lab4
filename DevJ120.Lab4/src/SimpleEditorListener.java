@@ -48,6 +48,7 @@ private File file;
 private FileReader reader;
 private FileWriter writer;
 
+
 /**
 * Конструктор класса, определяющий ссылку на главное окно приложения.
 *
@@ -56,6 +57,10 @@ private FileWriter writer;
 public SimpleEditorListener(SimpleEditor editor) {
 this.editor = editor;
 }
+
+private final String[][] FILTERS = { {"txt", "Text document(*.txt)"},
+                                    {"docx", "Word files (*.docx)"}
+                                    };
 
 /**
 * Метод обеспечивает обработку событий ActionEvent, связанных с кнопками и
@@ -161,9 +166,16 @@ private void save(){
         }
  }
 
+
+
 private void saveAs(){
     JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Saving file");
+        for (int i = 0; i < FILTERS[0].length; i++) {
+            customFileFilter ff = new customFileFilter(FILTERS[i][0], 
+                                                  FILTERS[i][1]);
+            fileChooser.addChoosableFileFilter(ff);
+        }
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int res = fileChooser.showSaveDialog(editor);
         if (res == JFileChooser.APPROVE_OPTION) {
