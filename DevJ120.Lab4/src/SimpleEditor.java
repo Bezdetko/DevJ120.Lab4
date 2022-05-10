@@ -26,8 +26,6 @@ import javax.swing.JTextArea;
 * редактор.Класс обеспечивает возможность открытия или создания файла,
 * содержащего простой текст, например, в формате .txt, .html или xml, с
 * возможностью редактирования его содержания.
-*
-* @author (C)Y.D.Zakovryashin, 11.11.2020
 */
 public class SimpleEditor extends JFrame {
 private Container cp;
