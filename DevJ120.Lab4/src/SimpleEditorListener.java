@@ -122,13 +122,17 @@ private void open(){
             int res = fileChooser.showDialog(editor, "Select");
             if (res == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
-                try (FileReader fr = new FileReader(file)){
+                try (FileReader reader = new FileReader(file)){
                    char[] buffer = new char[1024];
-                   fr.read(buffer);
-                   while ( fr.read(buffer) != -1){
-                   editor.appendText(new String(buffer), false);
-                   buffer = new char[1024];
-                        }
+//                   reader.read(buffer);
+//                   while ( reader.read(buffer) != -1){
+//                   editor.appendText(new String(buffer), false);
+//                   buffer = new char[1024];
+//                        }
+                    while (reader.ready()) {
+                        reader.read(buffer);
+                        editor.appendText(new String(buffer), false);
+                    }
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(editor, "File doesnt read", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -152,7 +156,7 @@ private void open(){
 }
 
 private void save(){
-    if (file == null || !editor.getText().isEmpty()) {
+    if (file == null || editor.getText().isEmpty()) {
         saveAs();
     }
     else {
@@ -193,6 +197,7 @@ private void saveAs(){
 private void cancel(){
     file = null;
     editor.appendText("", true);
+    editor.setFileName("");
 }
 
 private void exit(){
